@@ -16,6 +16,3 @@ El objetivo principal es entrenar un modelo predictivo que permita a la empresa 
 
 Un modelo de respuesta puede proporcionar un impulso significativo a la eficiencia de una campaña de marketing al aumentar las respuestas o reducir los gastos. 
 
-
-
-[Archivo html](file:///Users/inesmurtagh/Documents/Analisis%20Predictivo/Primer-Parcial.html)
