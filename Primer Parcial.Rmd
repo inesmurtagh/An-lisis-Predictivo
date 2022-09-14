@@ -1,0 +1,393 @@
+---
+title: "Análisis Exploratorio de Datos"
+author: "Inés Murtagh"
+date: "`r format(Sys.Date())`"
+output: 
+  bookdown::html_document2:
+    theme: paper
+    toc: true #TRUE to include a table of contents in the output
+    toc_depth: 2 # Depth of headers to include in table of contents
+    toc_float: true
+    code_download: false
+    number_sections: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+> **"Tratamiento de dataset, análisis y gráficos"**
+>
+> Trabajo Práctico 1
+
+El siguiente trabajo consiste en la selección y tratamiento de una base de datos, para su posterior análisis y desarrollo de un modelo predictivo. La base de datos elegida proviene del repositorio de datos de la página "Kaggle", y consiste en información sobre los clientes de la empresa de delivery de comida @iFood, y  las interacciones de cada uno de esos clientes con las campañas enviadas. 
+
+Fuente: [Kaggle](https://www.kaggle.com/datasets/rodsaldanha/arketing-campaign?select=marketing_campaign.csv)
+
+***
+
+**Objetivo**
+
+El objetivo principal es entrenar un modelo predictivo que permita a la empresa maximizar el beneficio de la próxima campaña de marketing. Poder predecir quién responderá a una oferta de un producto de iFood, a partir de distintas características tales como: el ingreso,cantidad de hijos, cantidad de dinero gastado en diversos productos, número de compras, campañas aceptadas, etc.
+
+Un modelo de respuesta puede proporcionar un impulso significativo a la eficiencia de una campaña de marketing al aumentar las respuestas o reducir los gastos. 
+
+***
+
+```{r clean,  message=F, include=FALSE}
+# limpiar memoria
+rm(list=ls())
+gc()
+
+# cargar librerías
+library(readxl)
+library(tidyverse)    # data management
+library(ggplot2)      # graficos
+library(skimr)
+library(GGally)
+library(ggpubr)
+library(gg.layers)
+```
+
+```{r}
+df <- read.table("marketing_campaign.csv", sep = ";", header = TRUE)
+```
+
+```{r}
+glimpse(df)
+```
+
+El dataset cuenta con 2240 registros, y 29 variables, de las cuales 26 son numéricas y 3 son del tipo caracter.
+
+_Variables de entrada_
+  
+- `AcceptedCmp1` - 1 si el cliente aceptó la oferta en la 1ª campaña, 0 en caso contrario
+- `AcceptedCmp2` - 1 si el cliente aceptó la oferta en la 2ª campaña, 0 en caso contrario
+- `AcceptedCmp3` - 1 si el cliente aceptó la oferta en la 3ª campaña, 0 en caso contrario
+- `AcceptedCmp4` - 1 si el cliente aceptó la oferta en la 4ª campaña, 0 en caso contrario
+- `AcceptedCmp5` - 1 si el cliente aceptó la oferta en la 5ª campaña, 0 en caso contrario
+
+- `MntFishProducts` - cantidad gastada en productos pesqueros en los últimos 2 años
+- `MntMeatProducts` - cantidad gastada en carne en los últimos 2 años
+- `MntFruits` - cantidad gastada en frutas en los últimos 2 años
+- `MntSweetProducts` - cantidad gastada en dulces en los últimos 2 años
+- `MntWines` - cantidad gastada en vino en los últimos 2 años
+
+- `NumDealsPurchases` - número de compras realizadas con descuento
+- `NumCatalogPurchases` - número de compras realizadas con el catálogo
+- `NumStorePurchases` - número de compras realizadas en el lugar
+- `NumWebPurchases` - número de compras realizadas con la página web
+
+- `NumWebVisitsMonth` - número de visitas al sitio web de la empresa en el último mes
+
+- `Z_Revenue` - ingresos después de la campaña de aceptación del cliente
+- `Z_CostContact` - costo de contactar a un cliente
+
+- `Complain` - 1 if customer complained in the last 2 years
+- `Recency` - number of days since the last purchase
+
+
+_Variable de salida_
+
+La variable `Response` es la variable target. Vale 1 si el cliente aceptó la oferta en la última campaña, 0 en caso contrario.
+
+
+# Tratamiento del Dataset
+
+## Dar formato
+
+En primer lugar, es importante que la variable ID sea una variable categórica y no numérica. Con formato numerico no va a ser útil para hacer el modelo, ya que este podría interpretar que se estan enumerando los registros por orden de importancia.
+
+```{r}
+df$ID = as.factor(df$ID)
+
+# chequeando que no hayan registros duplicados
+dups = df %>% janitor::get_dupes("ID")
+```
+
+Asegurarse que la columna de fecha esté en formato Date.
+```{r}
+df$Dt_Customer = as.Date(df$Dt_Customer)
+
+min(df$Dt_Customer)
+max(df$Dt_Customer)
+```
+El registro de los datos se encuentra en el período entre 2012 y 2014
+
+
+## Creación de nuevas variables
+
+```{r}
+# crear variable EDAD
+año = format(Sys.Date(), "%Y")
+df$Age = (as.numeric(año) - df$Year_Birth)
+df$Year_Birth = NULL
+
+# crear variable HIJOS
+df$Children = df$Kidhome + df$Teenhome
+df$Kidhome = NULL
+df$Teenhome = NULL
+
+# crear variable PURCHASES
+df$Purchases = df$NumDealsPurchases + df$NumCatalogPurchases + df$NumStorePurchases + df$NumWebPurchases
+df$NumDealsPurchases = NULL
+df$NumCatalogPurchases = NULL
+df$NumStorePurchases = NULL
+df$NumWebPurchases = NULL
+
+# crear variable ACCEPTED
+df$Accepted = df$AcceptedCmp1 + df$AcceptedCmp2 + df$AcceptedCmp3 + df$AcceptedCmp4 + df$AcceptedCmp5
+df$AcceptedCmp3 = NULL
+df$AcceptedCmp4 = NULL
+df$AcceptedCmp5 = NULL
+df$AcceptedCmp1 = NULL
+df$AcceptedCmp2 = NULL
+
+# creación variables Regular y Gold
+df$RegularProducts = df$MntWines + df$MntFruits + df$MntMeatProducts + df$MntFishProducts + df$MntSweetProducts
+df$GoldProducts = df$MntGoldProds
+
+df$MntWines = NULL
+df$MntFruits = NULL
+df$MntMeatProducts = NULL
+df$MntFishProducts = NULL
+df$MntSweetProducts = NULL
+df$MntGoldProds = NULL
+```
+
+A partir de la fecha de nacimiento de cada cliente, se calcula la edad de las personas.
+Se crea la variable hijos, a partir de la cantidad de niños y adolescentes en la casa.
+Se crea la variables compras, a partir de todos los distintos tipos de compras que un consumidor puede realizar, ya sea a traves de la pagina, del catalogo, de la web, o en el lugar.
+
+Para las campañas aceptadas, se decide crear una única variable 'Accepted' que sumarise todas las campañas que ha aceptado el cliente, en vez de tener 5 columnas diferentes, una por cada campaña.
+
+Para los productos, se segmento la cantidad de productos comprados en productos regulares y productos "Gold"
+
+
+## Eliminación de variables
+
+``` {r}
+summary(df$Z_CostContact)
+summary(df$Z_Revenue)
+
+df$Z_CostContact = NULL
+df$Z_Revenue = NULL
+```
+
+Se eliminaron las variables 'Z_CostContact' y 'Z_CostContact', ya que contenian los mismos valores para cada uno de los registros.
+
+
+## Arreglar las columnas
+``` {r}
+df = df %>% mutate(Marital_Status = 
+                      case_when(Marital_Status == "Together" | Marital_Status == "Married" ~ "Married",
+                      Marital_Status == "Alone" | Marital_Status == "Absurd" | Marital_Status == "YOLO" | Marital_Status == "Single" ~ "Single",
+                      Marital_Status == "Divorced" ~ "Divorced",
+                      Marital_Status == "Widow" ~ "Widow"))
+
+df = df %>% mutate(Response = case_when(Response == 0 ~ "No", Response == 1 ~ "Yes"))
+
+df = df %>% rename(Enrolment = Dt_Customer)
+```
+
+En el caso del estado civil, habían valores tales como 'YOLO', 'Absurd' y 'Alone' que fueron categorizados como 'Single', es decir una persona Soltera. De la misma manera, para aquellos que decian 'Together' o 'Married' fueron puestos en la categoría 'Married'
+
+Para las variables 'Response' y 'Complain' se modificaron los registros para que sean "No" en caso de 0, y "Yes" en caso de 1.
+
+
+## Análisis de datos faltantes (NAs)
+
+``` {r}
+# Contar número de nulos por columna
+sapply(df, function(x) sum(is.na(x)))
+
+# Income tiene 24
+df[is.na(df$Income),]
+```
+Se decide asignarle la cantidad promedio del Sueldo a aquellos registros donde este mismo está en blanco.
+
+``` {r}
+prom = round(mean(df$Income, na.rm = TRUE))
+df <- mutate_if(df, is.numeric, ~replace(., is.na(.), prom))
+```
+
+
+# Outliers
+
+Se evaluaran los outliers de las variables numericas.
+
+``` {r}
+# información del cliente
+ggplot(df, aes(x = Income)) + geom_boxplot(outlier.colour = 'red')
+ggplot(df, aes(x = Children)) + geom_boxplot(outlier.colour = 'red')
+ggplot(df, aes(x = Recency)) + geom_boxplot(outlier.colour = 'red')
+ggplot(df, aes(x = Age)) + geom_boxplot(outlier.colour = 'red')
+```
+Al graficar el boxplot de la variable "Ingreso", se ve que la mayoría de los datos están distribuidos hacia el lado izquierdo del gráfico, mientras que un solo punto está distribuido muy para la derecha. Es un valor atípico que ni siquiera se acerca al valor de los otras puntos.
+
+``` {r}
+summary(df$Income)
+```
+
+``` {r}
+IQR = IQR(df$Income)
+666666 > 68522 + 3*IQR
+# es un outlier severo 
+
+registro = df %>% filter(df$Income == 666666)
+registro
+```
+
+Esto podría tratarse de un error en la entrada de datos. Puede ser que afecte en el posterior análisis, por lo que se decide deshacerse de ese registro.
+
+```{r}
+ID = 9432
+df = df[!(df$ID == ID),]
+```
+
+
+``` {r}
+# Histogramas
+hist(df$NumWebVisitsMonth)
+hist(df$RegularProducts)
+hist(df$GoldProducts)
+hist(df$Purchases)
+```
+
+
+# Análisis de correlación
+
+Con un correlograma visualizamos la correlación entre todas las variables cuantitativas:
+
+```{r}
+dfnum = df %>% select(c(Income, Children, Recency, Accepted, RegularProducts, GoldProducts, NumWebVisitsMonth, Purchases, Age))
+
+GGally::ggcorr(
+  dfnum, method=c("pairwise","spearman"),  
+  label=T, hjust=1, label_size=2, layout.exp=10, size=3)
+```
+*** 
+
+Las variables correlacionadas positivamente están en rojo y las variables negativamente correlacionadas están en azul.
+
+*** 
+
+Es claro que la cantidad gastada en los productos ('RegularProducts' y 'GoldProducts') va a estar positivamente correlacionada con la cantidad de compras ('Purchases'). Si una aumenta, la otra también: cuanto más gaste, más cantidad de compras deberíamos esperar que haga un cliente.
+
+Así como también se debe esperar que estén correlacionados positivamente entre sí, estas dos variables mencionadas anteriormente y el Ingreso ('Income'). Esto indica que a medida que aumentan los Ingresos de un cliente, podemos esperar que gasten más en nuestros productos.
+
+Por otro lado, variables como 'Recency' y 'Age' no tienen correlaciones significativas con ninguna variable.
+
+La correlación más negativa que se tiene es entre Ingresos y NumWebVisitsMonth. Esto podría indicar que se espera que los clientes con ingresos más bajos visiten más nuestro sitio web.
+
+Algo que llama la atención de estos resultados, es la relacion negativa entre la cantidad de hijos y la cantidad de compras. Esto quiere decir que, a mayor cantidad de hijos, menor son las compras realizadas, lo cual no hace mucho sentido.
+
+***
+
+# Gráficos
+
+
+Conocer al cliente
+```{r}
+ggplot(df, aes(Age)) + geom_density(color = "black", fill = "pink") + geom_vline(aes(xintercept = mean(Age)), color = 'red', size = 1)
+
+ggplot(df, aes(Enrolment)) + geom_density(color = "black", fill = "pink") + geom_vline(aes(xintercept = mean(Enrolment)), color = 'red', size = 1)
+```
+
+Analisis de la cantidad gastada en productos de la empresa
+
+```{r}
+ggplot(df, aes(x = RegularProducts + GoldProducts, y = Income)) + geom_point() + xlab('Amount Spent') + geom_smooth(color="red", method = lm)
+
+ggplot(df, aes(x = RegularProducts + GoldProducts, y = Age)) + geom_point() + xlab('Amount Spent') + geom_smooth(color="red", method = lm)
+
+ggplot(df, aes(x = RegularProducts + GoldProducts, y = Children)) + geom_point() + xlab('Amount Spent') + geom_smooth(color="red", method = lm)
+```
+
+
+```{r}
+ggplot(df, aes(x = Accepted)) + geom_bar()
+
+ed = df %>% group_by(Education, Response) %>% summarise(cantidad = n())
+
+ggplot(ed, aes(x = Education, y = cantidad, fill = Response)) + geom_col(position = "dodge") + 
+  geom_text(aes(label = cantidad), colour = "white", size = 3, vjust = 1.5, position = position_dodge(.9)) + 
+  scale_fill_brewer(palette = "Set2")
+
+stat = df %>% group_by(Marital_Status, Response) %>% summarise(cantidad = n())
+
+ggplot(stat, aes(x = Marital_Status, y = cantidad, fill = Response)) + geom_col(position = "dodge") + 
+  geom_text(aes(label = cantidad), colour = "white", size = 3, vjust = 1.5, position = position_dodge(.9)) + 
+  scale_fill_brewer(palette = "Set2")
+```
+
+
+
+# Predicción del modelo
+
+```{r}
+library(caret)
+library(rpart)
+library(rpart.plot)
+```
+
+## Partición (entreno y testeo)
+
+```{r}
+dfpred = df
+
+dfpred$Enrolment = NULL
+dfpred$ID = NULL
+dfpred$Education = NULL
+dfpred$Age = NULL
+
+set.seed(154);particion=createDataPartition(y=dfpred$Response,p=0.80, list=F)
+entreno = dfpred[particion,] 
+testeo = dfpred[-particion,]
+
+dim(entreno)
+dim(testeo)
+```
+
+## Arbol de Decisión
+Se crea el arbol de decisión utilizando la funcion rpart, a partir de los datos de 'entreno'.
+
+```{r}
+# Arbol de decisión
+arbol = rpart(Response ~.,entreno,method = "class")
+rpart.plot(arbol, extra = 1, type=5, main= "Arbol de Decision")
+```
+
+
+## Predicción
+Para predecir se utilizarán los datos de la tabla 'testeo'
+
+```{r}
+pred = predict(arbol, testeo, type="class")
+confusionMatrix(pred, as.factor(testeo$Response))
+
+fila = df[417,]
+predict(arbol, fila, type="class")
+
+df[417,]
+```
+
+La regla que uso el arbol para decidir si el cliente número 418 va a aceptar la siguiente campaña que lance la compañía es la siguiente:
+
+```{r}
+rpart.predict(arbol, fila, rules = TRUE)
+```
+
+(regla: el cliente aceptó mas de 1 campaña pero menos que 3, y pasaron más de 20 días desde que hizo su última compra. Además está casado)
+
+***
+
+# Conclusiones
+
+El equipo de marketing necesita mejorar su estrategia utilizada para adquirir nuevos clientes, y una buena manera de empezar es a través de una base de datos como esta.
+
+Como se vio en el análisis, las campañas de marketing recientes no han sido tan efectivas como se esperaba… para ello, analizar el conjunto de datos es clave para comprender los problemas y proponer soluciones basadas en datos. Es importante que los analistas de datos de cualquier empresa puedan medir la participación de los clientes en las campañas de marketing, evaluar el éxito de campañas anteriores y proponer soluciones basadas en datos para aumentar la participación en campañas futuras.
+
+El desafío para los equipos de marketing es saber a quién están tratando de llegar, y esto se hace contando con la información sobre cada uno de los clientes. 
+
+Esta base de datos tiene mucho potencial dentro de la empresa. Hay un gran valor en saber cómo apelar a los distintos usuarios que una organización tiene. Que cada una pueda recibir un mensaje diferente que se relaciona más con ellos, viniendo de la misma campaña de marketing. 
