@@ -27,14 +27,14 @@ Analizar el conjunto de datos es clave para comprender los problemas y proponer 
 
 _Competencia Kaggle_
 
-El siguiente trabajo consiste en realizar una “submission” a la competencia de Kaggle creada para la comisión A de la materia Análisis Presdictivo (2Q2022), buscando conseguir un R² superior al X%
+El siguiente trabajo consiste en realizar una “submission” a la competencia de Kaggle creada para la comisión A de la materia Análisis Presdictivo (2Q2022), buscando conseguir un R² superior al X%. 
 
 
-- [Competencia Kaggle](https://www.kaggle.com/competitions/ap-2022q1/leaderboard)
+- [Link a la competencia en Kaggle](https://www.kaggle.com/competitions/ap-tp2-2q2022)
 
-- [Presentación](https://docs.google.com/presentation/d/1lo-xjvURgXOeT5hDcwrkhbplxAzKeBwu/edit?usp=sharing&ouid=101068290472041686714&rtpof=true&sd=true)
+- [Presentación]()
 
-- [Codigo Python](https://github.com/cpettinato/AnalisisPredictivo/blob/main/Examen2-Pettinato.ipynb)
+- [Codigo Python]()
 
 
 _Objetivo_
