@@ -34,7 +34,7 @@ El siguiente trabajo consiste en realizar una “submission” a la competencia 
 
 - [Presentación]()
 
-- [Codigo Python: Trabajo práctico desarrollo](https://colab.research.google.com/drive/1rKkLk7LYZkeqyjvgXoVx97YsYvdeNheR?usp=sharing)
+- [Codigo Python: Trabajo práctico desarrollo](https://github.com/inesmurtagh/analisis-predictivo/blob/main/Segundo%20Parcial.ipynb)
 
 - [Codigo Python: Modelo Final](https://colab.research.google.com/drive/1xlKTXLMlLWRGqn9qGHClMyYLpbv6vsMU?usp=sharing)
 
