@@ -34,7 +34,9 @@ El siguiente trabajo consiste en realizar una “submission” a la competencia 
 
 - [Presentación]()
 
-- [Codigo Python]()
+- [Codigo Python: Trabajo práctico desarrollo](https://colab.research.google.com/drive/1rKkLk7LYZkeqyjvgXoVx97YsYvdeNheR?usp=sharing)
+
+- [Codigo Python: Modelo Final](https://colab.research.google.com/drive/1xlKTXLMlLWRGqn9qGHClMyYLpbv6vsMU?usp=sharing)
 
 
 _Objetivo_
