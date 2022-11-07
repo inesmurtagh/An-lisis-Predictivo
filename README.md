@@ -32,11 +32,11 @@ El siguiente trabajo consiste en realizar una “submission” a la competencia 
 
 - [Link a la competencia en Kaggle](https://www.kaggle.com/competitions/ap-tp2-2q2022)
 
-- [Presentación]()
+- [Presentación](https://docs.google.com/presentation/d/11iooaSmg0rd9YJW-DcLY8gj9JhdG1EzJxOk-O_BMgzw/edit?usp=sharing)
 
-- [Codigo Python: Trabajo práctico desarrollo](https://github.com/inesmurtagh/analisis-predictivo/blob/main/Segundo%20Parcial.ipynb)
+- [Código Python: Trabajo práctico desarrollo](https://github.com/inesmurtagh/analisis-predictivo/blob/main/Segundo%20Parcial.ipynb)
 
-- [Codigo Python: Modelo Final](https://colab.research.google.com/drive/1xlKTXLMlLWRGqn9qGHClMyYLpbv6vsMU?usp=sharing)
+- [Código Python: Modelo Final](https://colab.research.google.com/drive/1xlKTXLMlLWRGqn9qGHClMyYLpbv6vsMU?usp=sharing)
 
 
 _Objetivo_
