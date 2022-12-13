@@ -51,7 +51,7 @@ _Airline Passenger Satisfaction_
 
 La base de datos que se va a utilizar contiene información sobre una encuesta de satisfacción de pasajeros de una línea aérea. La satisfacción del cliente juega un papel importante al afectar el negocio de una empresa, por lo tanto, analizar y mejorar los factores que están estrechamente relacionados con la satisfacción del cliente es importante para el crecimiento y la reputación de la empresa aérea.
 
-- [Presentación](https://github.com/inesmurtagh/analisis-predictivo/blob/main/Presentación%20Final.ipynb)
+- [Presentación](https://github.com/inesmurtagh/analisis-predictivo/blob/main/Trabajo%20Final.pdf)
 - [Código Python: Modelo Final](https://github.com/inesmurtagh/analisis-predictivo/blob/main/Trabajo%20Final.ipynb)
 
 
