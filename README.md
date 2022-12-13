@@ -44,3 +44,24 @@ _Objetivo_
 > El objetivo principal de la presentación es que se demuestre que no se ha logrado el score de casualidad, sino que realmente se entiende el funcionamiento de lo que el código y el modelo hace. 
 
 
+
+## Trabajo Final
+
+_Airline Passenger Satisfaction_
+
+La base de datos que se va a utilizar contiene información sobre una encuesta de satisfacción de pasajeros de una línea aérea. La satisfacción del cliente juega un papel importante al afectar el negocio de una empresa, por lo tanto, analizar y mejorar los factores que están estrechamente relacionados con la satisfacción del cliente es importante para el crecimiento y la reputación de la empresa aérea.
+
+- [Presentación](https://docs.google.com/presentation/d/1YGkzQl_BHcPhuVeqnUs0fJcoL0z-cryhT77rA_ljfW4/edit?usp=sharing)
+- [Código Python: Modelo Final](https://github.com/inesmurtagh/analisis-predictivo/blob/main/Trabajo%20Final.ipynb)
+
+
+_Objetivo_
+
+> El objetivo de este proyecto es guiar a una compañía aérea a determinar los factores importantes que influyen en la satisfacción del cliente o pasajero de la aerolínea.
+
+_Hipótesis_
+
+> ¿Se puede predecir la satisfacción de un pasajero?
+> ¿Existe un patrón, en función de las calificaciones otorgadas por los pasajeros, que refleje la experiencia general del cliente y su satisfacción?
+> ¿Puede predecir la satisfacción de los pasajeros?
+
